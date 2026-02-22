@@ -1,0 +1,21 @@
+{
+  "name": "discord-ticket-suite",
+  "version": "2.0.0",
+  "description": "Discord Ticket Bot + Web Dashboard (Node.js)",
+  "main": "bot/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node bot/index.js",
+    "dashboard": "node dashboard/server.js",
+    "deploy": "node bot/deploy-commands.js",
+    "check": "node --check bot/index.js && node --check bot/deploy-commands.js && node --check bot/handlers/ticketHandler.js && node --check bot/handlers/embedFactory.js && node --check bot/utils/transcript.js && node --check dashboard/server.js && node --check dashboard/routes/auth.js && node --check dashboard/routes/dashboard.js && node --check database/models/store.js && node --check config.js",
+    "pack": "bash scripts/make-download.sh"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
+  }
+}

@@ -1,0 +1,58 @@
+<!doctype html><html><head><meta charset="utf-8"/><title>Manage <%= guild.name %></title><link rel="stylesheet" href="/public/style.css"/></head><body>
+<div class="container">
+  <h2>Server: <%= guild.name %></h2>
+  <form id="cfgForm">
+    <h3>Ticket Settings</h3>
+    <label>Category ID <input name="categoryId" value="<%= config.categoryId || '' %>" /></label>
+    <label>Staff Role ID <input name="staffRoleId" value="<%= config.staffRoleId || '' %>" /></label>
+    <label>Log Channel ID <input name="logChannelId" value="<%= config.logChannelId || '' %>" /></label>
+    <label>Panel Channel ID <input name="panelChannelId" value="<%= config.panelChannelId || '' %>" /></label>
+    <label>Ticket Name Format <input name="ticketNameFormat" value="<%= config.ticketNameFormat %>" /></label>
+
+    <h3>Embed Editor</h3>
+    <label>Title <input id="title" name="title" value="<%= config.embed.title %>" /></label>
+    <label>Description <textarea id="description" name="description"><%= config.embed.description %></textarea></label>
+    <label>Color <input id="color" name="color" value="<%= config.embed.color %>" /></label>
+    <label>Author Name <input id="authorName" name="authorName" value="<%= config.embed.authorName %>" /></label>
+    <label>Author Icon URL <input id="authorIcon" name="authorIcon" value="<%= config.embed.authorIcon %>" /></label>
+    <label>Footer Text <input id="footerText" name="footerText" value="<%= config.embed.footerText %>" /></label>
+    <label>Footer Icon URL <input id="footerIcon" name="footerIcon" value="<%= config.embed.footerIcon %>" /></label>
+    <label>Banner URL <input id="bannerUrl" name="bannerUrl" value="<%= config.embed.bannerUrl %>" /></label>
+    <label>Thumbnail URL <input id="thumbnailUrl" name="thumbnailUrl" value="<%= config.embed.thumbnailUrl %>" /></label>
+
+    <div class="row">
+      <button type="button" class="btn" onclick="saveConfig()">Save</button>
+      <button type="button" class="btn secondary" onclick="applyPanel()">Apply</button>
+    </div>
+  </form>
+
+  <h3>Live Preview</h3>
+  <div id="preview" class="discord-embed"></div>
+</div>
+<script>
+const guildId = '<%= guild.id %>';
+function renderPreview(){
+  const t = document.getElementById('title').value;
+  const d = document.getElementById('description').value;
+  const c = document.getElementById('color').value || '#5865F2';
+  const a = document.getElementById('authorName').value;
+  const f = document.getElementById('footerText').value;
+  const b = document.getElementById('bannerUrl').value;
+  const th = document.getElementById('thumbnailUrl').value;
+  document.getElementById('preview').innerHTML = `<div class="bar" style="background:${c}"></div><div class="content"><small>${a}</small><h4>${t}</h4><p>${d.replace(/\n/g,'<br/>')}</p>${th?`<img class='thumb' src='${th}'/>`:''}${b?`<img class='banner' src='${b}'/>`:''}<small>${f}</small></div>`;
+}
+async function saveConfig(){
+  const body = Object.fromEntries(new FormData(document.getElementById('cfgForm')).entries());
+  const res = await fetch(`/dashboard/guild/${guildId}/save`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+  const data = await res.json();
+  alert(data.ok ? 'Saved!' : data.error || 'Failed');
+}
+async function applyPanel(){
+  const res = await fetch(`/dashboard/guild/${guildId}/apply`, {method:'POST'});
+  const data = await res.json();
+  alert(data.ok ? 'Applied panel to Discord channel!' : data.error || 'Failed');
+}
+['title','description','color','authorName','footerText','bannerUrl','thumbnailUrl'].forEach(id=>document.getElementById(id).addEventListener('input',renderPreview));
+renderPreview();
+</script>
+</body></html>
